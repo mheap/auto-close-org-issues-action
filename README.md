@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Auto Close Org Issues
-        uses: mheap/github-action-readme@main
+        uses: mheap/auto-close-org-issues-action@main
         with:
           token: ${{ secrets.PAT }}
           org: YOUR_ORG_NAME

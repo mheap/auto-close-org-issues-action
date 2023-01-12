@@ -2,7 +2,7 @@
   "name": "auto-close-org-issues-action",
   "version": "1.0.0",
   "description": "Automatically close issues that are raised by people that belong to a specific organization using GitHub Actions",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "build": "npx @vercel/ncc build && npx convert-action"
