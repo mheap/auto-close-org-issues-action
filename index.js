@@ -34,6 +34,7 @@ async function action() {
         ...github.context.repo,
         issue_number: github.context.issue.number,
         state: "closed",
+        state_reason: "not_planned",
       });
       core.setOutput("user_role", userRole);
     }

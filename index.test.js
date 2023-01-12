@@ -136,6 +136,7 @@ function mockCloseIssue(body) {
   nock("https://api.github.com")
     .patch(`/repos/mheap/missing-repo/issues/27`, {
       state: "closed",
+      state_reason: "not_planned",
     })
     .reply(200);
 }
