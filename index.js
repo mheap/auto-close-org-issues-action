@@ -9,11 +9,25 @@ async function action() {
     // Process inputs for use later
     const org = core.getInput("org", { required: true });
     const message = core.getInput("message", { required: true });
+    const keepOpen = core.getInput("keep_open", { required: false });
+
+    // There may be exceptions to the auto-close rule.
+    // These are controlled using user-supplied labels
+    const keepOpenLabels = keepOpen.split(",").map((n) => n.trim());
+    const issueLabels = github.context.payload.issue.labels.map((n) => n.name);
+
+    const commonLabels = issueLabels.filter((value) =>
+      keepOpenLabels.includes(value)
+    );
+    if (commonLabels.length > 0) {
+      core.setOutput("status", "skipped");
+      return;
+    }
 
     // Who triggered the event?
     const username = github.context.payload.issue.user.login;
 
-    // List the orgs that they are a member of
+    // Are they a member of the provided org?
     let userRole;
     try {
       const { data } = await octokit.rest.orgs.getMembershipForUser({
@@ -23,7 +37,7 @@ async function action() {
       userRole = data.role;
     } catch (e) {}
 
-    // If any match our input, add a comment and auto-close the issue
+    // If so, add a comment and auto-close the issue
     if (userRole) {
       await octokit.rest.issues.createComment({
         ...github.context.repo,

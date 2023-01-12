@@ -24,7 +24,6 @@ describe("Auto Close Org Issues", () => {
     });
 
     core.setOutput = jest.fn();
-    core.warning = jest.fn();
     core.setFailed = jest.fn();
   });
 
@@ -74,11 +73,59 @@ describe("Auto Close Org Issues", () => {
     });
   });
 
+  describe("handles labels", () => {
+    it("ignores issues with specific labels", async () => {
+      restoreTest = mockIssue(
+        {
+          issue: {
+            user: { login: "valid_user" },
+            number: 27,
+            labels: [{ name: "team-a" }],
+          },
+        },
+        {
+          INPUT_ORG: "demo_org",
+          INPUT_MESSAGE: "You can't do that",
+          INPUT_KEEP_OPEN: "team-a",
+        }
+      );
+
+      await action();
+      expect(core.setOutput).toBeCalledTimes(1);
+      expect(core.setOutput).toBeCalledWith("status", "skipped");
+    });
+
+    it("handles multiple labels", async () => {
+      restoreTest = mockIssue(
+        {
+          issue: {
+            user: { login: "valid_user" },
+            number: 27,
+            labels: [{ name: "team-b" }],
+          },
+        },
+        {
+          INPUT_ORG: "demo_org",
+          INPUT_MESSAGE: "You can't do that",
+          INPUT_KEEP_OPEN: "team-a, team-b",
+        }
+      );
+
+      await action();
+      expect(core.setOutput).toBeCalledTimes(1);
+      expect(core.setOutput).toBeCalledWith("status", "skipped");
+    });
+  });
+
   describe("runs successfully", () => {
     it("user is a member of the org", async () => {
       restoreTest = mockIssue(
         {
-          issue: { user: { login: "valid_user" }, number: 27 },
+          issue: {
+            user: { login: "valid_user" },
+            number: 27,
+            labels: [],
+          },
         },
         {
           INPUT_ORG: "demo_org",
@@ -99,7 +146,11 @@ describe("Auto Close Org Issues", () => {
     it("user is not a member of the org", async () => {
       restoreTest = mockIssue(
         {
-          issue: { user: { login: "valid_user" }, number: 27 },
+          issue: {
+            user: { login: "valid_user" },
+            number: 27,
+            labels: [],
+          },
         },
         {
           INPUT_ORG: "demo_org",

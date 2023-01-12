@@ -16,3 +16,6 @@ inputs:
   message:
     description: "The comment to add when auto-closing an issue"
     required: true
+  keep_open:
+    description: "If any of these labels (comma-separated) are applied, the issue will not be auto-closed"
+    required: false
